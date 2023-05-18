@@ -22,7 +22,7 @@ public abstract class Register
     {
         return (byte)(_value & readMask);
     }
-    protected void GetWriteValue(byte value, byte writeMask)
+    protected void WriteValue(byte value, byte writeMask)
     {
         _value &= writeMask;
         _value |= value;
@@ -35,7 +35,7 @@ public abstract class Register
     {
         return (T)Enum.ToObject(typeof(T), _value & readMask);
     }
-    protected void GetWriteValue<T>(T value, byte writeMask)
+    protected void WriteValue<T>(T value, byte writeMask)
         where T : Enum
     {
         _value &= writeMask;
