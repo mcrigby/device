@@ -13,33 +13,34 @@ public abstract class Register
         _onWriteValue = onWriteValue;
     }
 
-    protected Func<byte> GetReadValue(byte readMask)
+    protected void Load()
     {
-        return () => (byte)(_value & readMask);
-    }
-    protected Action<byte> GetWriteValue(byte writeMask)
-    {
-        return value => {
-            _value &= writeMask;
-            _value |= value;
-
-            _onWriteValue(_value);
-        };
+        _value = _getValue();
     }
 
-    protected Func<T> GetReadValue<T>(byte readMask)
+    protected byte ReadValue(byte readMask)
+    {
+        return (byte)(_value & readMask);
+    }
+    protected void GetWriteValue(byte value, byte writeMask)
+    {
+        _value &= writeMask;
+        _value |= value;
+
+        _onWriteValue(_value);
+    }
+
+    protected T ReadValue<T>(byte readMask)
         where T : Enum
     {
-        return () => (T)Enum.ToObject(typeof(T), _value & readMask);
+        return (T)Enum.ToObject(typeof(T), _value & readMask);
     }
-    protected Action<T> GetWriteValue<T>(byte writeMask)
+    protected void GetWriteValue<T>(T value, byte writeMask)
         where T : Enum
     {
-        return value => {
-            _value &= writeMask;
-            _value |= Convert.ToByte(value);
+        _value &= writeMask;
+        _value |= Convert.ToByte(value);
 
-            _onWriteValue(_value);
-        };
+        _onWriteValue(_value);
     }
 }
