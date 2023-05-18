@@ -26,4 +26,20 @@ public abstract class Register
             _onWriteValue(_value);
         };
     }
+
+    protected Func<T> GetReadValue<T>(byte readMask)
+        where T : Enum
+    {
+        return () => (T)Enum.ToObject(typeof(T), _value & readMask);
+    }
+    protected Action<T> GetWriteValue<T>(byte writeMask)
+        where T : Enum
+    {
+        return value => {
+            _value &= writeMask;
+            _value |= Convert.ToByte(value);
+
+            _onWriteValue(_value);
+        };
+    }
 }
