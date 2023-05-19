@@ -1,46 +1,36 @@
 ﻿namespace CutilloRigby.Device;
 
-public abstract class Register
+public abstract class RegisterBase
 {
     protected byte _value;
 
     protected readonly Func<byte> _getValue;
     protected readonly Action<byte> _onWriteValue;
 
-    protected Register(Func<byte> getValue, Action<byte> onWriteValue)
+    protected RegisterBase(Func<byte> getValue, Action<byte> onWriteValue)
     {
         _getValue = getValue;
         _onWriteValue = onWriteValue;
+
+        _value = _getValue();
     }
 
-    protected void Load()
+    public void Load()
     {
         _value = _getValue();
     }
 
-    protected byte ReadValue(byte readMask)
+    protected byte this[byte mask]
     {
-        return (byte)(_value & readMask);
-    }
-    protected void WriteValue(byte value, byte writeMask)
-    {
-        _value &= writeMask;
-        _value |= value;
+        get => (byte)(_value & mask);
+        set
+        {
+            _value &= (byte)~mask;
+            _value |= value;
 
-        _onWriteValue(_value);
+            _onWriteValue(_value);
+        }
     }
 
-    protected T ReadValue<T>(byte readMask)
-        where T : Enum
-    {
-        return (T)Enum.ToObject(typeof(T), _value & readMask);
-    }
-    protected void WriteValue<T>(T value, byte writeMask)
-        where T : Enum
-    {
-        _value &= writeMask;
-        _value |= Convert.ToByte(value);
-
-        _onWriteValue(_value);
-    }
+    public byte Value => _value;
 }
